@@ -29,7 +29,7 @@ public class Car {
         return "" +
                 String.format("%-30s", this.name) + "$" +
                 String.format("%-10s", this.price) +
-                String.format("%-4s", this.name) + "km/h";
+                String.format("%-4s", this.maxSpeed) + "km/h";
     }
 
 }
