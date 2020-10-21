@@ -63,7 +63,7 @@ public class CarsDemo {
     }
 
     private void runSortByName(Collection<Car> firstList, Collection<Car> secondList) {
-        printLine("Sorting cars by name:\n");
+        printLine("Sorting cars by name in reversed order:\n");
 
         Stream.concat(firstList.stream(), secondList.stream())
                 .sorted(carNameComparator.reversed())
