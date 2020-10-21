@@ -57,7 +57,7 @@ public class CarsDemo {
             printLine("- Max speed: " + maxSpeed);
             cars.stream()
                     .limit(Constants.GROUPING_DEMO_MAX_COUNT)
-                    .forEach(car -> printLine(car.toString()));
+                    .forEach(this::printCar);
         });
 
         newLine();
