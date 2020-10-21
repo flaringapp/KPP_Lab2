@@ -15,27 +15,42 @@ public class CarsDemo {
             String.CASE_INSENSITIVE_ORDER.compare(first.getName(), second.getName());
 
     public void run() {
+        Collection<Car> carsList = loadCarsList(Constants.INPUT_FILE_CARS_NAME);
+
+        Collection<Car> carsToDelete = loadCarsList(Constants.INPUT_FILE_CARS_TO_DELETE_NAME);
+
         Collection<Car> firstList = loadCarsList(Constants.INPUT_FILE_1_NAME);
         Collection<Car> secondList = loadCarsList(Constants.INPUT_FILE_2_NAME);
 
-        printLine("First collection:");
+        printLine("Cars list:");
+        printCars(carsList);
+
+        Map<Integer, List<Car>> groupedCars = runGrouping(carsList);
+
+        printLine("Cars to delete:");
+        printCars(carsToDelete);
+
+        runSubtract(groupedCars, carsToDelete);
+
+        printLine("Cars from file 1:");
         printCars(firstList);
 
-        printLine("Second collection:");
+        printLine("Cars from file 2:");
         printCars(secondList);
 
-        runGrouping(firstList, secondList);
+        Collection<Car> mergedCars = runMergeSortByName(firstList, secondList);
 
-        runSubtract(firstList, secondList);
-
-        runSortByName(firstList, secondList);
+        runCountInBoundOfPrice(mergedCars, Constants.PRICE_MIN, Constants.PRICE_MAX);
     }
 
-    private void runGrouping(Collection<Car> firstList, Collection<Car> secondList) {
+    /**
+     * @return map of max speed - list of cars with this ,ax speed
+     */
+    private Map<Integer, List<Car>> runGrouping(Collection<Car> carsList) {
         printLine("Grouping cars by max speed and printing max " + Constants.GROUPING_DEMO_MAX_COUNT +
                 "elements of each group\n");
 
-        Map<Integer, List<Car>> carsByMaxSpeed = Stream.concat(firstList.stream(), secondList.stream())
+        Map<Integer, List<Car>> carsByMaxSpeed = carsList.stream()
                 .collect(Collectors.groupingBy(Car::getMaxSpeed));
 
         carsByMaxSpeed.forEach((maxSpeed, cars) -> {
@@ -46,27 +61,50 @@ public class CarsDemo {
         });
 
         newLine();
+
+        return carsByMaxSpeed;
     }
 
-    private void runSubtract(Collection<Car> firstList, Collection<Car> secondList) {
-        printLine("Subtracting 2 cars lists\n");
+    private void runSubtract(
+            Map<Integer, List<Car>> groupedCars,
+            Collection<Car> carsToDelete
+    ) {
+        printLine("Subtracting cars to delete from grouped cars map by max speed\n");
 
-        firstList.stream()
-                .filter(car ->
-                        secondList.stream().noneMatch(otherCar ->
-                                car.getName().equals(otherCar.getName())
-                        )
-                )
-                .forEach(this::printCar);
+        groupedCars.forEach((maxSpeed, cars) -> {
+                    cars.removeIf(car ->
+                            carsToDelete.stream()
+                                    .anyMatch(carToDelete ->
+                                            car.getName().equals(carToDelete.getName())
+                                    )
+                    );
+                    printLine("- Max speed: " + maxSpeed);
+                    cars.forEach(this::printCar);
+                }
+        );
 
         newLine();
     }
 
-    private void runSortByName(Collection<Car> firstList, Collection<Car> secondList) {
+    private Collection<Car> runMergeSortByName(Collection<Car> firstList, Collection<Car> secondList) {
         printLine("Sorting cars by name in reversed order:\n");
 
-        Stream.concat(firstList.stream(), secondList.stream())
+        List<Car> mergedCars = Stream.concat(firstList.stream(), secondList.stream())
                 .sorted(carNameComparator.reversed())
+                .collect(Collectors.toList());
+
+        mergedCars.forEach(this::printCar);
+
+        newLine();
+
+        return mergedCars;
+    }
+
+    private void runCountInBoundOfPrice(Collection<Car> cars, int priceMin, int priceMax) {
+        printLine("Searching for cars with price more that " + priceMin + " and less than " + priceMax);
+
+        cars.stream()
+                .filter(car -> car.getPrice() >= priceMin && car.getPrice() <= priceMax)
                 .forEach(this::printCar);
 
         newLine();

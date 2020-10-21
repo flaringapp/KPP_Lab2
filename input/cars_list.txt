@@ -1,0 +1,6 @@
+Some name 1 15000 250
+Name 2 10000 150
+Test car 25000 350
+From file 2 15000 250
+Bestie 10000 150
+Superb car 25000 350
