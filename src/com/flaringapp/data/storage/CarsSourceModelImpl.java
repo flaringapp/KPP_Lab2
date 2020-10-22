@@ -27,7 +27,7 @@ public class CarsSourceModelImpl implements CarsSourceModel {
             String line = scanner.nextLine();
 
             Car car = parseLine(line);
-            if (car == null) throw new InvalidCarDataFormat(line);
+            if (car == null) throw new InvalidCarDataFormatException(line);
 
             cars.add(car);
         }
@@ -38,7 +38,7 @@ public class CarsSourceModelImpl implements CarsSourceModel {
     }
 
     @Nullable
-    private Car parseLine(String line) throws InvalidCarDataFormat {
+    private Car parseLine(String line) throws InvalidCarDataFormatException {
         String[] params = line.split(SPACE);
         int size = params.length;
 
